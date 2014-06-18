@@ -1,15 +1,11 @@
 module Parser (
    parseSentinelFile,
-   makePattern,
-   executeCommand,
-   Target
+   Target(Target)
 ) where
 
 import Control.Monad
 import qualified Control.Exception as E
 import Text.ParserCombinators.Parsec
-import System.FilePath.Glob
-import System.Process
 
 -- | A target is just a file-glob/command pair that a sentinel file is filled with
 data Target = Target String String
@@ -40,10 +36,3 @@ p_targetFile = many p_target
 parseSentinelFile :: String -> Either ParseError [Target]
 parseSentinelFile input = parse p_targetFile "(unknown)" input
 
--- | Prepares a glob pattern from a target
-makePattern :: Target -> Pattern
-makePattern (Target g _) = compile g
-
--- | Executes the shell command for a target
-executeCommand :: Target -> IO ProcessHandle
-executeCommand (Target _ c) = runCommand c

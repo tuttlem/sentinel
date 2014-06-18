@@ -9,7 +9,8 @@ import Data.Maybe
 import System.INotify
 import System.Directory
 import System.FilePath.Glob
-import Parser (parseSentinelFile, makePattern, executeCommand, Target)
+import System.Process
+import Parser (parseSentinelFile, Target(Target))
 
 -- | The file locations that we'll attempt to read upon invocation
 locations = [ "./.sentinel", "~/.sentinel" ]
@@ -44,12 +45,16 @@ applicableTargets Modified { maybeFilePath = path } = do
    return $ filter (\t -> match (makePattern t) f) ts
  where f = head (maybeToList path)
 
+findTargets f = filter (\t -> match (makePattern t) f)
+
 -- | Performs the actions defined for targets associated to this event
 handleFile :: Event -> IO ()
-handleFile e = do
-   targets <- applicableTargets e
-   mapM_ executeCommand targets
-   return ()
+handleFile e = applicableTargets e >>= mapM_ executeCommand
+
+-- | Prepares a glob pattern from a target
+makePattern (Target g _) = compile g
+-- | Executes the shell command for a target
+executeCommand (Target _ c) = runCommand c
 
 main :: IO ()
 main = do
