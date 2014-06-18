@@ -16,3 +16,4 @@ Things that I still need to do . . .
 
 * Doesn't traverse directories recursivly
 * Doesn't make duplicate actions distinct if the condition arises
+* Still need to add a special variable to use a filename in a sentinel rule
