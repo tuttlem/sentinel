@@ -1,5 +1,7 @@
 # Sentinel
 
+Sentinel is a command-line tool that you configure to respond to file-system events.
+
 Prepare a `.sentinel` file in the directory that you are in and/or one in your home folder (which will act as a globally included sentinel file). Run sentinel in a terminal alongside your development editor, and it will respond to configured file changes.
 
 Here's an example `.sentinel` file
