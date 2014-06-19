@@ -21,11 +21,6 @@ makePattern (Target g _) = compile g
 -- | Executes the shell command for a target
 executeCommand (Target _ c) = runCommand c
 
--- | Flattens a 2d list (a list of lists) into a single list
-flatten :: [[a]] -> [a]
-flatten [] = []
-flatten (g:gs) = g ++ (flatten gs)
-
 -- | Extracts a string from a Maybe FilePath
 exFN :: Maybe FilePath -> String
 exFN path = head (maybeToList path)
@@ -45,7 +40,7 @@ allContents :: [String] -> IO [Target]
 allContents paths = do
    rs <- safeReadFiles
    let cs = map parseSentinelFile (catMaybes rs)
-   return $ flatten $ rights cs
+   return $ concat $ rights cs
  where safeReadFiles = mapM safeReadFile paths
 
 -- | Filters a list of targets for a given event
