@@ -3,8 +3,6 @@ module Parser (
    Target(Target)
 ) where
 
-import Control.Monad
-import qualified Control.Exception as E
 import Text.ParserCombinators.Parsec
 
 -- | A target is just a file-glob/command pair that a sentinel file is filled with
@@ -24,8 +22,8 @@ p_end = p_eol <|> (eof >> return "")
 --   colon, and the command to the right. Can be terminated by line or by file
 p_target :: Parser Target
 p_target = do
-   try p_eol
-   g <- manyTill anyChar (try (char ':'))
+   _ <- many (oneOf "\n\r ")
+   g <- manyTill anyChar (char ':')
    c <- manyTill anyChar (try p_end)
    return $ Target g c
 
