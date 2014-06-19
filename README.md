@@ -6,14 +6,17 @@ Here's an example `.sentinel` file
 
 ```
 *.hs:cabal build
+*.pl:perl -c {fn}
 ```
 
 This says, listen to any file that was modified matching the glob pattern `*.hs` and execute `cabal build`.
+
+It also says that when a `*.pl` file changes, it'll run a syntax check or a `perl -c` on the file that changed. The variable `{fn}` allows sentinel to directly target that one file.
 
 Pretty simple.
 
 Things that I still need to do . . .
 
-* Doesn't traverse directories recursivly
-* Doesn't make duplicate actions distinct if the condition arises
-* Still need to add a special variable to use a filename in a sentinel rule
+* hinotify doesn't traverse directories recursively. Need to build this tree at startup and work out how to manage directory structure changes at runtime.
+* Doesn't make duplicate actions distinct if the condition arises.
+
