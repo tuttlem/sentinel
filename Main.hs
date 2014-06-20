@@ -37,22 +37,18 @@ safeReadFile path = do
 -- | Collects all of the successfully read contents of the read files into an array of
 --   targets
 allContents :: [String] -> IO [Target]
-allContents paths = do
-   rs <- safeReadFiles
-   let cs = map parseSentinelFile (catMaybes rs)
-   return $ concat $ rights cs
- where safeReadFiles = mapM safeReadFile paths
+allContents paths = liftM p (mapM safeReadFile paths)
+ where p = concat . rights . map parseSentinelFile . catMaybes
 
 -- | Filters a list of targets for a given event
 filterTargets :: Event -> [Target] -> IO [Target]
-filterTargets Modified { maybeFilePath = path } ts = do
+filterTargets Modified { maybeFilePath = path } ts =
    return $ filter (\t -> match (makePattern t) f) ts
  where f = exFN path
 
 -- | Substitutes out magic variables for their real counterpart values
 substituteCommands :: Event -> [Target] -> IO [Target]
-substituteCommands e ts = do
-   return $ map (scmd e) ts
+substituteCommands e ts = return $ map (scmd e) ts
  where scmd Modified { maybeFilePath = path } (Target g c) = Target g c'
         where f = exFN path
               c' = replace "{fn}" f c
@@ -69,7 +65,6 @@ main = do
    workingDir <- getCurrentDirectory
    inotify <- initINotify
    _ <- addWatch inotify [Modify] workingDir handleFile
-   forever $ do
-      threadDelay 1000
+   forever $ threadDelay 1000
 
 
